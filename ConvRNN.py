@@ -35,8 +35,9 @@ class CGRU_cell(nn.Module):
                       self.num_features, self.filter_size, 1, self.padding),
             nn.GroupNorm(self.num_features // 32, self.num_features))
 
-    def forward(self, inputs=None, hidden_state=None, seq_len=10):
+    def forward(self, inputs=None, hidden_state=None, seq_len=3):
         # seq_len=10 for moving_mnist
+
         if hidden_state is None:
             htprev = torch.zeros(inputs.size(1), self.num_features,
                                  self.shape[0], self.shape[1]).cuda()
@@ -48,7 +49,16 @@ class CGRU_cell(nn.Module):
                 x = torch.zeros(htprev.size(0), self.input_channels,
                                 self.shape[0], self.shape[1]).cuda()
             else:
+                # print(inputs.shape)
+                # print(index)
+                # print('======')
                 x = inputs[index, ...]
+                # print(x.shape)
+
+            # print(htprev.shape)
+            # print(x.shape)
+            # print('=====')
+
 
             combined_1 = torch.cat((x, htprev), 1)  # X_t + H_t-1
             gates = self.conv1(combined_1)  # W * (X_t + H_t-1)
@@ -86,7 +96,7 @@ class CLSTM_cell(nn.Module):
                       self.padding),
             nn.GroupNorm(4 * self.num_features // 32, 4 * self.num_features))
 
-    def forward(self, inputs=None, hidden_state=None, seq_len=10):
+    def forward(self, inputs=None, hidden_state=None, seq_len=3):
         #  seq_len=10 for moving_mnist
         if hidden_state is None:
             hx = torch.zeros(inputs.size(1), self.num_features, self.shape[0],

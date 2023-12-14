@@ -122,19 +122,23 @@ class MovingMNIST(data.Dataset):
         else:
             images = self.dataset[:, idx, ...]
 
+
+
         # if self.transform is not None:
         #     images = self.transform(images)
 
         r = 1
         w = int(64 / r)
         images = images.reshape((length, w, r, w, r)).transpose(0, 2, 4, 1, 3).reshape((length, r * r, w, w))
+        print(images.shape)
+        print('+++++++++++')
 
         input = images[:self.n_frames_input]
         if self.n_frames_output > 0:
             output = images[self.n_frames_input:length]
         else:
             output = []
-
+        print(input.shape)
         frozen = input[-1]
         # add a wall to input data
         # pad = np.zeros_like(input[:, 0])
@@ -152,6 +156,10 @@ class MovingMNIST(data.Dataset):
         # print(output.size())
 
         out = [idx, output, input, frozen, np.zeros(1)]
+        
+        
+        # print(out)
+        # print("====================")
         return out
 
     def __len__(self):
