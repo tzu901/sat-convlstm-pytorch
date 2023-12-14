@@ -30,7 +30,12 @@ class ED(nn.Module):
         self.encoder = encoder
         self.decoder = decoder
 
+        # print(self.encoder)
+        # print(self.decoder)
+
     def forward(self, input):
         state = self.encoder(input)
         output = self.decoder(state)
+        # print(output.shape)
+        # print('//////////////////////////////')
         return output

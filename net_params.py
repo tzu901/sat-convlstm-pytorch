@@ -37,7 +37,7 @@ convlstm_decoder_params = [
 
 convgru_encoder_params = [
     [
-        OrderedDict({'conv1_leaky_1': [1, 16, 3, 1, 1]}),
+        OrderedDict({'conv1_leaky_1': [14, 16, 3, 1, 1]}),
         OrderedDict({'conv2_leaky_1': [64, 64, 3, 2, 1]}),
         OrderedDict({'conv3_leaky_1': [96, 96, 3, 2, 1]}),
     ],
@@ -55,7 +55,7 @@ convgru_decoder_params = [
         OrderedDict({'deconv2_leaky_1': [96, 96, 4, 2, 1]}),
         OrderedDict({
             'conv3_leaky_1': [64, 16, 3, 1, 1],
-            'conv4_leaky_1': [16, 1, 1, 1, 0]
+            'conv4_leaky_1': [16, 14, 1, 1, 0]
         }),
     ],
 

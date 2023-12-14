@@ -21,7 +21,10 @@ class Encoder(nn.Module):
         assert len(subnets) == len(rnns)
         self.blocks = len(subnets)
 
+        # print(subnets)
+        # print(rnns)
         for index, (params, rnn) in enumerate(zip(subnets, rnns), 1):
+            # print(params)
             # index sign from 1
             setattr(self, 'stage' + str(index), make_layers(params))
             setattr(self, 'rnn' + str(index), rnn)
@@ -29,10 +32,16 @@ class Encoder(nn.Module):
     def forward_by_stage(self, inputs, subnet, rnn):
         seq_number, batch_size, input_channel, height, width = inputs.size()
         inputs = torch.reshape(inputs, (-1, input_channel, height, width))
+        # print('==========================')
+        # print(subnet)
         inputs = subnet(inputs)
+        # print('==========================')
         inputs = torch.reshape(inputs, (seq_number, batch_size, inputs.size(1),
                                         inputs.size(2), inputs.size(3)))
+        # print('==========================')
         outputs_stage, state_stage = rnn(inputs, None)
+        # print('==========================')
+        
         return outputs_stage, state_stage
 
     def forward(self, inputs):
@@ -41,8 +50,10 @@ class Encoder(nn.Module):
         logging.debug(inputs.size())
         for i in range(1, self.blocks + 1):
             inputs, state_stage = self.forward_by_stage(
-                inputs, getattr(self, 'stage' + str(i)),
-                getattr(self, 'rnn' + str(i)))
+                inputs, 
+                getattr(self, 'stage' + str(i)),
+                getattr(self, 'rnn' + str(i))
+            )
             hidden_states.append(state_stage)
         return tuple(hidden_states)
 

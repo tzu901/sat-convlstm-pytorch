@@ -41,7 +41,7 @@ parser.add_argument('--batch_size',
                     default=4,
                     type=int,
                     help='mini-batch size')
-parser.add_argument('-lr', default=1e-4, type=float, help='G learning rate')
+parser.add_argument('-lr', default=0.0001, type=float, help='G learning rate')
 parser.add_argument('-frames_input',
                     default=10,
                     type=int,
@@ -148,6 +148,10 @@ def train():
         for i, (idx, targetVar, inputVar, _, _) in enumerate(t):
             inputs = inputVar.to(device)  # B,S,C,H,W
             label = targetVar.to(device)  # B,S,C,H,W
+
+            print(inputs.shape)
+            print(label.shape)
+
             optimizer.zero_grad()
             net.train()
             pred = net(inputs)  # B,S,C,H,W
@@ -178,7 +182,7 @@ def train():
                 loss_aver = loss.item() / args.batch_size
                 # record validation loss
                 valid_losses.append(loss_aver)
-                #print ("validloss: {:.6f},  epoch : {:02d}".format(loss_aver,epoch),end = '\r', flush=True)
+                # print ("validloss: {:.6f},  epoch : {:02d}".format(loss_aver,epoch),end = '\r', flush=True)
                 t.set_postfix({
                     'validloss': '{:.6f}'.format(loss_aver),
                     'epoch': '{:02d}'.format(epoch)

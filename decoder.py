@@ -12,7 +12,7 @@
 from torch import nn
 from utils import make_layers
 import torch
-
+from src.dataset import DigitDataset
 
 class Decoder(nn.Module):
     def __init__(self, subnets, rnns):
@@ -27,7 +27,7 @@ class Decoder(nn.Module):
                     make_layers(params))
 
     def forward_by_stage(self, inputs, state, subnet, rnn):
-        inputs, state_stage = rnn(inputs, state, seq_len=10)
+        inputs, state_stage = rnn(inputs, state, seq_len=3)
         seq_number, batch_size, input_channel, height, width = inputs.size()
         inputs = torch.reshape(inputs, (-1, input_channel, height, width))
         inputs = subnet(inputs)
@@ -64,18 +64,20 @@ if __name__ == "__main__":
         encoder = nn.DataParallel(encoder)
         decoder = nn.DataParallel(decoder)
 
-    trainFolder = MovingMNIST(is_train=True,
-                              root='data/',
-                              n_frames_input=10,
-                              n_frames_output=10,
-                              num_objects=[3])
-    trainLoader = torch.utils.data.DataLoader(
+    trainFolder = DigitDataset(is_train=True,
+                              root='./txt/train.txt',
+                              n_frames_input=3,
+                              n_frames_output=1,
+                              num_objects=[4]
+    )
+                              
+    train_dataloader = torch.utils.data.DataLoader(
         trainFolder,
-        batch_size=8,
+        batch_size=4,
         shuffle=False,
     )
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    for i, (idx, targetVar, inputVar, _, _) in enumerate(trainLoader):
+    for i, (idx, targetVar, inputVar, _, _) in enumerate(train_dataloader):
         inputs = inputVar.to(device)  # B,S,1,64,64
         state = encoder(inputs)
         break
